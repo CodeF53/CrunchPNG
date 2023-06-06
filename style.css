@@ -10,5 +10,15 @@ body {
   height: 100vh;
   gap: 1rem;
 }
-.col { display: flex; flex-direction: column; }
 h1, h2, h3, h4, h5, p, button, span, label, ::marker, svg, ul, a, input, textarea, sub, th, td { margin: 0; }
+.row { display: flex; flex-direction: row; }
+.col { display: flex; flex-direction: column; }
+.row.centerChildren > *, .row > .centered { align-self: center; margin: auto 0px; }
+.col.centerChildren > *, .col > .centered { align-self: center; margin: 0px auto; }
+.spaceBetween { justify-content: space-between; }
+.spaceAround { justify-content: space-around; }
+.spaceEvenly { justify-content: space-evenly; }
+.gap0 { gap: 0.25rem; }
+.gap1 { gap: 0.5rem; }
+.gap2 { gap: 1rem; }
+.gap3 { gap: 1.5rem; }

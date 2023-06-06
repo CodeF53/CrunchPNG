@@ -1,7 +1,7 @@
 import { createApp } from "https://unpkg.com/petite-vue?module"
 import { optimise as optimize } from "@jsquash/oxipng"
 import { encode, decode } from "@jsquash/png"
-import pLimit from 'p-limit';
+import pLimit from 'p-limit'
 
 /**
  * Downloads a blob as a file with the specified filename.
@@ -46,18 +46,21 @@ async function optimizeImage(image) {
 
 createApp({
   images: [],
+  progress: 0,
   // you can't use array functions directly on a FileList, so we convert it into an array
   async handleFileInput(e) { this.images = [...e.target.files] },
 
   async optimizeImages() {
     if (this.images.length === 0) { return } // guard against running when we don't even have any images selected
-    const start = Date.now(); // log time for racing purposes
+    const start = Date.now() // log time for racing purposes
 
     // optimise images, limiting the number of async processes to avoid out of memory errors
-    const limit = pLimit(32);
+    const limit = pLimit(32)
     const optimizedImages = await Promise.all(this.images.map(async image => await limit(async () => {
-      return await optimizeImage(image)
-    })));
+      const optimized = await optimizeImage(image)
+      this.progress++
+      return optimized
+    })))
 
     // if we have a single image, we can save it directly, no zip
     if (optimizedImages.length === 1) {
@@ -67,20 +70,20 @@ createApp({
       saveBlob(blob, optimizedImages[0].name)
     } else {
       // add every file to a new zip file
-      const zip = new JSZip();
+      const zip = new JSZip()
       optimizedImages.forEach(({ name, data }) => {
         zip.file(name, data)
-      });
+      })
       // encode the zip as a blob
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const zipBlob = await zip.generateAsync({ type: 'blob' })
       // save it
       saveBlob(zipBlob, 'compressedImages.zip')
     }
 
-    const end = Date.now(); // log time for racing purposes
-    console.log(`Execution time: ${end - start} ms`);
+    const end = Date.now() // log time for racing purposes
+    console.log(`Execution time: ${end - start} ms`)
 
-    this.images = [];
-    this.$refs.fileInput.value = null;
+    this.images = []
+    this.$refs.fileInput.value = null
   }
 }).mount()

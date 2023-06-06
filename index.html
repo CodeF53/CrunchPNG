@@ -27,15 +27,22 @@
   <script src="app.js" type="module"></script>
 </head>
 <body>
-  <form @submit.prevent="optimizeImages" class="col">
+  <form @submit.prevent="optimizeImages" class="col gap1">
     <input type="file" multiple accept="image/png" @change="handleFileInput" ref="fileInput">
-    <button type="submit" v-if="images.length > 0">Optimize</button>
+
+    <template v-if="images.length > 0">
+      <button type="submit">Optimize</button>
+
+      <div class="row spaceEvenly">
+        <label>{{ progress }}/{{ images.length }}</label>
+        <progress :max="images.length" :value="progress"></progress>
+      </div>
+    </template>
   </form>
 
   <div class="col">
     <span>todo</span>
     <ul>
-      <li>progressbar</li>
       <li>compression ratio info</li>
       <li>zip input</li>
       <li>alpha optimizations (needs a different oxipng port)</li>
