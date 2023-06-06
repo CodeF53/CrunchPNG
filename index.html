@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WebOptiPng</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "@jsquash/oxipng": "https://unpkg.com/@jsquash/oxipng@1.0.0/index.js",
+        "@jsquash/png": "https://unpkg.com/@jsquash/png@1.0.0/index.js"
+      },
+      "scopes": {
+        "https://unpkg.com/": {
+          "wasm-feature-detect": "https://unpkg.com/wasm-feature-detect@1.5.1/dist/esm/index.js"
+        }
+      }
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" type="module"></script>
+</head>
+<body>
+  <form @submit.prevent="optimizeImages" class="col">
+    <input type="file" multiple accept="image/png" @change="handleFileInput">
+    <button type="submit" v-if="images.length > 0">Optimize</button>
+  </form>
+
+  <div class="col">
+    <span>todo</span>
+    <ul>
+      <li>progressbar</li>
+      <li>compression ratio info</li>
+      <li>WASM out of memory protection</li>
+      <li>zip input</li>
+      <li>alpha optimizations (needs a different oxipng port)</li>
+    </ul>
+  </div>
+</body>
+</html>
