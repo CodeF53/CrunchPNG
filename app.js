@@ -2,7 +2,13 @@ import { createApp } from "https://unpkg.com/petite-vue?module"
 import { optimise as optimize } from "@jsquash/oxipng"
 import { encode, decode } from "@jsquash/png"
 
-// given `blob`, downloads it as `filename`
+/**
+ * Downloads a blob as a file with the specified filename.
+ *
+ * @param {Blob} blob - The blob to be downloaded.
+ * @param {string} filename - The name of the file to be saved.
+ * @returns {void}
+ */
 function saveBlob(blob, filename) {
   // create a URL for the blob
   const url = URL.createObjectURL(blob)
@@ -17,6 +23,12 @@ function saveBlob(blob, filename) {
   URL.revokeObjectURL(url)
 }
 
+/**
+ * Optimizes an image file (assumed to be a PNG) asynchronously.
+ *
+ * @param {File} image - The image file to be optimized.
+ * @return {Promise<{ name: string, data: ArrayBuffer }>} A promise that resolves to an object containing the optimized image name and data.
+ */
 async function optimizeImage(image) {
   // load image into a buffer
   const srcBuff = await image.arrayBuffer()
