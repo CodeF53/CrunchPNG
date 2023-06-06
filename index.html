@@ -3,15 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>CrunchPNG</title>
+
+  <!-- use https://generator.jspm.io/ to figure out what scopes/imports to add -->
+  <!-- then switch links to unpkg, because it works with WASM -->
   <script type="importmap">
     {
       "imports": {
         "@jsquash/oxipng": "https://unpkg.com/@jsquash/oxipng@1.0.0/index.js",
-        "@jsquash/png": "https://unpkg.com/@jsquash/png@1.0.0/index.js"
+        "@jsquash/png": "https://unpkg.com/@jsquash/png@1.0.0/index.js",
+        "p-limit": "https://unpkg.com/p-limit@4.0.0/index.js"
       },
       "scopes": {
         "https://unpkg.com/": {
-          "wasm-feature-detect": "https://unpkg.com/wasm-feature-detect@1.5.1/dist/esm/index.js"
+          "wasm-feature-detect": "https://unpkg.com/wasm-feature-detect@1.5.1/dist/esm/index.js",
+          "yocto-queue": "https://unpkg.com/yocto-queue@1.0.0/index.js"
         }
       }
     }
@@ -23,7 +28,7 @@
 </head>
 <body>
   <form @submit.prevent="optimizeImages" class="col">
-    <input type="file" multiple accept="image/png" @change="handleFileInput">
+    <input type="file" multiple accept="image/png" @change="handleFileInput" ref="fileInput">
     <button type="submit" v-if="images.length > 0">Optimize</button>
   </form>
 
@@ -32,7 +37,6 @@
     <ul>
       <li>progressbar</li>
       <li>compression ratio info</li>
-      <li>WASM out of memory protection</li>
       <li>zip input</li>
       <li>alpha optimizations (needs a different oxipng port)</li>
     </ul>

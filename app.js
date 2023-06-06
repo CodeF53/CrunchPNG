@@ -1,6 +1,7 @@
 import { createApp } from "https://unpkg.com/petite-vue?module"
 import { optimise as optimize } from "@jsquash/oxipng"
 import { encode, decode } from "@jsquash/png"
+import pLimit from 'p-limit';
 
 /**
  * Downloads a blob as a file with the specified filename.
@@ -49,10 +50,14 @@ createApp({
   async handleFileInput(e) { this.images = [...e.target.files] },
 
   async optimizeImages() {
-    if (this.images.length === 0) { return }
+    if (this.images.length === 0) { return } // guard against running when we don't even have any images selected
+    const start = Date.now(); // log time for racing purposes
 
-    // optimise images
-    const optimizedImages = await Promise.all(this.images.map(optimizeImage));
+    // optimise images, limiting the number of async processes to avoid out of memory errors
+    const limit = pLimit(32);
+    const optimizedImages = await Promise.all(this.images.map(async image => await limit(async () => {
+      return await optimizeImage(image)
+    })));
 
     // if we have a single image, we can save it directly, no zip
     if (optimizedImages.length === 1) {
@@ -71,5 +76,11 @@ createApp({
       // save it
       saveBlob(zipBlob, 'compressedImages.zip')
     }
+
+    const end = Date.now(); // log time for racing purposes
+    console.log(`Execution time: ${end - start} ms`);
+
+    this.images = [];
+    this.$refs.fileInput.value = null;
   }
 }).mount()
