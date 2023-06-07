@@ -41,3 +41,29 @@ body:not(.vsc-initialized) .hideUntilInit { display: none; }
 body.vsc-initialized .showUntilInit { display: none; }
 /* misc */
 img, image, canvas { image-rendering: pixelated; }
+/* fancy garbage background */
+:root:before, body:before {
+  /* thing behind everything */
+  content: "";
+  position: fixed;
+  z-index: -1;
+  left: 0px;
+  top: 0px;
+  width: calc(100vw + 4rem);
+  height: calc(100vh + 4rem);
+  /* grid of dots */
+  background-image: radial-gradient(rgba(71, 71, 71, 0.195) .125rem, transparent 25%);
+}
+:root::before {
+  background-size: 2rem 2rem;
+}
+body:before {
+  background-size: 2rem 2rem;
+
+  animation: scrollGrid 5s linear infinite;
+  background-position: -.5rem;
+}
+@keyframes scrollGrid {
+  from { transform: translate(0); }
+  to { transform: translate(-4rem, -4rem); }
+}
