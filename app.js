@@ -47,8 +47,17 @@ async function optimizeImage(image) {
 createApp({
   images: [],
   progress: 0,
+  originalSize: 0,
+  optimizeSize: 0,
+  async handleFileInput(e) {
   // you can't use array functions directly on a FileList, so we convert it into an array
-  async handleFileInput(e) { this.images = [...e.target.files] },
+    this.images = [...e.target.files]
+    if (this.images.length > 1) {
+      this.originalSize = this.images.reduce((total, img) => parseInt(total || 0) + parseInt(img.size))
+    } else {
+      this.originalSize = this.images[0].size
+    }
+  },
 
   async optimizeImages() {
     if (this.images.length === 0) { return } // guard against running when we don't even have any images selected
@@ -59,6 +68,7 @@ createApp({
     const optimizedImages = await Promise.all(this.images.map(async image => await limit(async () => {
       const optimized = await optimizeImage(image)
       this.progress++
+      this.optimizeSize += optimized.data.byteLength
       return optimized
     })))
 
@@ -83,7 +93,6 @@ createApp({
     const end = Date.now() // log time for racing purposes
     console.log(`Execution time: ${end - start} ms`)
 
-    this.images = []
     this.$refs.fileInput.value = null
   }
 }).mount()

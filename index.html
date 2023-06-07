@@ -38,12 +38,20 @@
         <progress :max="images.length" :value="progress"></progress>
       </div>
     </template>
+
+    <template v-if="images.length > 0 && progress === images.length">
+      <span>Original Size: {{ originalSize }} bytes</span>
+
+      <span>Optimized Size: {{ optimizeSize }} bytes</span>
+      <span>{{ Math.round(optimizeSize / originalSize * 10000, 2)/100 }}% of the original</span>
+    </template>
   </form>
 
   <div class="col">
     <span>todo</span>
     <ul>
-      <li>compression ratio info</li>
+      <li>don't save images when they are bigger than expected</li>
+      <li>make it look cooler</li>
       <li>zip input</li>
       <li>alpha optimizations (needs a different oxipng port)</li>
     </ul>
