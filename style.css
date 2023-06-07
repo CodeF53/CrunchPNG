@@ -40,7 +40,8 @@ h1, h2, h3, h4, h5, p, button, span, label, ::marker, svg, ul, a, input, textare
 body:not(.vsc-initialized) .hideUntilInit { display: none; }
 body.vsc-initialized .showUntilInit { display: none; }
 /* misc */
-img, image, canvas { image-rendering: pixelated; }
+.pixel { image-rendering: pixelated; }
+#logo { width: 5rem; }
 /* fancy garbage background */
 :root:before, body:before {
   /* thing behind everything */

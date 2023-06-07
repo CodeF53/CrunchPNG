@@ -5,6 +5,7 @@
   <title>CrunchPNG</title>
   <meta name="description" content="Bulk .png optimizer">
   <meta name="keywords" content=".png, optimize, small, lossless, optimise">
+  <link rel="icon" type="image/png" href="icon.png">
 
   <!-- use https://generator.jspm.io/ to figure out what scopes/imports to add -->
   <!-- then switch links to unpkg, because it works with WASM -->
@@ -32,6 +33,7 @@
 </head>
 <body>
   <header class="col centerChildren">
+    <img id="logo" src="icon.png">
     <h1>Crunch PNG</h1>
     <h2><code id="tagText">bulk</code> <code>.png</code> optimizer</h2>
 
@@ -51,7 +53,7 @@
       </div>
     </template>
 
-    <img :src="'data:image/png;base64,'+latestFile" v-if="progress > 0 && progress !== images.length">
+    <img class="pixel" :src="'data:image/png;base64,'+latestFile" v-if="progress > 0 && progress !== images.length">
 
     <template v-if="images.length > 0 && progress === images.length">
       <span>Original Size: {{ originalSize }} bytes</span>
