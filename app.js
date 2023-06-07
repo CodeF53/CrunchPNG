@@ -1,4 +1,4 @@
-import { createApp } from "https://unpkg.com/petite-vue?module"
+import { createApp } from "petite-vue"
 import { optimise as optimize } from "@jsquash/oxipng"
 import { encode, decode } from "@jsquash/png"
 import pLimit from 'p-limit'

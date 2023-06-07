@@ -23,3 +23,5 @@ h1, h2, h3, h4, h5, p, button, span, label, ::marker, svg, ul, a, input, textare
 .gap1 { gap: 0.5rem; }
 .gap2 { gap: 1rem; }
 .gap3 { gap: 1.5rem; }
+body:not(.vsc-initialized) .hideUntilInit { display: none; }
+body.vsc-initialized .showUntilInit { display: none; }

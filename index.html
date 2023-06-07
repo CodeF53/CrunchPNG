@@ -11,7 +11,8 @@
       "imports": {
         "@jsquash/oxipng": "https://unpkg.com/@jsquash/oxipng@1.0.0/index.js",
         "@jsquash/png": "https://unpkg.com/@jsquash/png@1.0.0/index.js",
-        "p-limit": "https://unpkg.com/p-limit@4.0.0/index.js"
+        "p-limit": "https://unpkg.com/p-limit@4.0.0/index.js",
+        "petite-vue": "https://unpkg.com/petite-vue?module"
       },
       "scopes": {
         "https://unpkg.com/": {
@@ -29,7 +30,7 @@
 <body>
   <h1>Crunch PNG</h1>
 
-  <form @submit.prevent="optimizeImages" class="col gap1">
+  <form @submit.prevent="optimizeImages" class="col gap1 hideUntilInit">
     <input type="file" multiple accept="image/png" @change="handleFileInput" ref="fileInput">
 
     <template v-if="images.length > 0">
@@ -50,6 +51,8 @@
       <span>{{ Math.round(optimizeSize / originalSize * 10000, 2)/100 }}% of the original</span>
     </template>
   </form>
+
+  <span class="showUntilInit">Loading...</span>
 
   <div class="col">
     <span>todo</span>
