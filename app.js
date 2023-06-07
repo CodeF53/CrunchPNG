@@ -41,7 +41,10 @@ async function optimizeImage(image) {
   // optimize using oxipng
   const optBuff = await optimize(imgBuff, { level: 6, interlace: false })
 
-  return { name: image.name, data: optBuff  }
+  // if we ended up making the image bigger, use the original instead.
+  const outData = (optBuff.byteLength > srcBuff.byteLength)? srcBuff : optBuff;
+
+  return { name: image.name, data: outData  }
 }
 
 createApp({
@@ -51,6 +54,11 @@ createApp({
   optimizeSize: 0,
   latestFile: '',
   async handleFileInput(e) {
+    // reset shit just in case this is our second run in a row
+    this.progress = 0
+    this.originalSize = 0
+    this.optimizeSize = 0
+
     // you can't use array functions directly on a FileList, so we convert it into an array
     this.images = [...e.target.files]
     if (this.images.length > 1) {
