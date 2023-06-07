@@ -48,28 +48,23 @@ async function optimizeImage(image) {
 }
 
 createApp({
+  state: 'input',
   images: [],
   progress: 0,
   originalSize: 0,
   optimizeSize: 0,
   latestFile: '',
   async handleFileInput(e) {
-    // reset shit just in case this is our second run in a row
-    this.progress = 0
-    this.originalSize = 0
-    this.optimizeSize = 0
-
     // you can't use array functions directly on a FileList, so we convert it into an array
     this.images = [...e.target.files]
-    if (this.images.length > 1) {
-      this.originalSize = this.images.reduce((total, img) => parseInt(total || 0) + parseInt(img.size))
-    } else {
-      this.originalSize = this.images[0].size
-    }
+    // calculate size of all the images, for stats later on
+    this.originalSize = this.images.reduce((total, img) => total + parseInt(img.size), 0)
   },
 
   async optimizeImages() {
     if (this.images.length === 0) { return } // guard against running when we don't even have any images selected
+    this.state = 'processing'
+
     const start = Date.now() // log time for racing purposes
 
     // optimise images, limiting the number of async processes to avoid out of memory errors
@@ -108,6 +103,14 @@ createApp({
     const end = Date.now() // log time for racing purposes
     console.log(`Execution time: ${end - start} ms`)
 
+    this.state = 'done'
+  },
+  
+  reset() {
+    this.progress = 0
+    this.originalSize = 0
+    this.optimizeSize = 0
     this.$refs.fileInput.value = null
+    this.state = 'input'
   }
 }).mount()

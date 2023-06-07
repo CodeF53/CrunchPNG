@@ -42,6 +42,7 @@ body.vsc-initialized .showUntilInit { display: none; }
 /* misc */
 .pixel { image-rendering: pixelated; }
 #logo { width: 5rem; }
+.big { font-size: 2rem; }
 /* fancy garbage background */
 :root:before, body:before {
   /* thing behind everything */
