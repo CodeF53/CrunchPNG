@@ -27,6 +27,8 @@
   <script src="app.js" type="module"></script>
 </head>
 <body>
+  <h1>Crunch PNG</h1>
+
   <form @submit.prevent="optimizeImages" class="col gap1">
     <input type="file" multiple accept="image/png" @change="handleFileInput" ref="fileInput">
 
@@ -38,6 +40,8 @@
         <progress :max="images.length" :value="progress"></progress>
       </div>
     </template>
+
+    <img :src="'data:image/png;base64,'+latestFile" v-if="progress > 0 && progress !== images.length">
 
     <template v-if="images.length > 0 && progress === images.length">
       <span>Original Size: {{ originalSize }} bytes</span>
@@ -51,7 +55,6 @@
     <span>todo</span>
     <ul>
       <li>don't save images when they are bigger than expected</li>
-      <li>make it look cooler</li>
       <li>zip input</li>
       <li>alpha optimizations (needs a different oxipng port)</li>
     </ul>

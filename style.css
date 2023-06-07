@@ -1,3 +1,4 @@
+img, image, canvas { image-rendering: pixelated; }
 :root { color-scheme: dark; }
 body {
   font-family: sans-serif;

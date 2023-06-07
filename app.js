@@ -49,8 +49,9 @@ createApp({
   progress: 0,
   originalSize: 0,
   optimizeSize: 0,
+  latestFile: '',
   async handleFileInput(e) {
-  // you can't use array functions directly on a FileList, so we convert it into an array
+    // you can't use array functions directly on a FileList, so we convert it into an array
     this.images = [...e.target.files]
     if (this.images.length > 1) {
       this.originalSize = this.images.reduce((total, img) => parseInt(total || 0) + parseInt(img.size))
@@ -67,8 +68,14 @@ createApp({
     const limit = pLimit(32)
     const optimizedImages = await Promise.all(this.images.map(async image => await limit(async () => {
       const optimized = await optimizeImage(image)
+
+      // increment progressBar
       this.progress++
+      // increment optimized total
       this.optimizeSize += optimized.data.byteLength
+      // update latestFile image display
+      this.latestFile = btoa(String.fromCharCode(...new Uint8Array(optimized.data)))
+
       return optimized
     })))
 
