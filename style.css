@@ -40,8 +40,8 @@ h1, h2, h3, h4, h5, p, button, span, label, ::marker, svg, ul, a, input, textare
 .gap3 { gap: 1.5rem; }
 
 /* dynamic content while we wait for Vue to load */
-body:not(.vsc-initialized) .hideUntilInit { display: none; }
-body.vsc-initialized .showUntilInit { display: none; }
+body:not(.vue-mounted) .hideUntilInit { display: none; }
+body.vue-mounted .showUntilInit { display: none; }
 
 /* misc */
 .pixel { image-rendering: pixelated; }

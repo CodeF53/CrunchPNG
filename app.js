@@ -59,6 +59,8 @@ createApp({
   zip: new JSZip(),
   handlingZip: false,
 
+  mounted() { document.body.className = 'vue-mounted' },
+
   handleFileDrop(e) { this.handleFiles([...e.dataTransfer.files]) },
   handleFileInput(e) { this.handleFiles([...e.target.files]) },
   async handleFiles(files) {

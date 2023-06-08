@@ -31,7 +31,7 @@
   <script src="app.js" type="module"></script>
   <script src="funStyleNonsense.js" defer></script>
 </head>
-<body @drop.prevent="handleFileDrop" @dragover.prevent>
+<body @drop.prevent="handleFileDrop" @dragover.prevent @vue:mounted="mounted">
   <input type="file" multiple accept="image/png, .zip" @change="handleFileInput" ref="fileInput" id="fileInput">
 
   <header class="col centerChildren">
