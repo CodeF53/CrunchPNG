@@ -4,6 +4,9 @@ import { encode, decode } from "@jsquash/png"
 import pLimit from 'p-limit'
 import { isPNG, isZIP } from "./util.js"
 
+// his name is steve, (he took me 2.5 hours to make, ask Obscure#3584)
+const encodeB64 = (uint8array) => btoa(Array.from(uint8array, x => String.fromCharCode(x)).join(''));
+
 /**
  * Downloads a blob as a file with the specified filename.
  *
@@ -54,7 +57,7 @@ createApp({
   progress: 0,
   originalSize: 0,
   optimizeSize: 0,
-  latestFile: '',
+  latestImg: '',
   selectedText: 'No files selected',
   zip: new JSZip(),
   handlingZip: false,
@@ -108,12 +111,13 @@ createApp({
     const optimizedImages = await Promise.all(this.images.map(async image => await limit(async () => {
       const optimized = await optimizeImage(image)
 
+      // update latestImg image display
+      const imgArr = new Uint8Array(optimized.data) // bytes
+      this.latestImg = encodeB64(imgArr);
       // increment progressBar
       this.progress++
       // increment optimized total
       this.optimizeSize += optimized.data.byteLength
-      // update latestFile image display
-      this.latestFile = btoa(String.fromCharCode(...new Uint8Array(optimized.data)))
 
       return optimized
     })))

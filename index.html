@@ -60,7 +60,7 @@
         <label>{{ progress }}/{{ images.length }}</label>
         <progress :max="images.length" :value="progress"></progress>
       </div>
-      <img v-if="progress > 0" class="pixel" :src="'data:image/png;base64,'+latestFile">
+      <img v-if="progress > 0" id="latestImgPreview" class="pixel" :src="'data:image/png;base64,'+latestImg">
     </div>
 
     <div v-else-if="state === 'done'" class="col gap1">

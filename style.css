@@ -47,6 +47,7 @@ body.vue-mounted .showUntilInit { display: none; }
 .pixel { image-rendering: pixelated; }
 #logo { width: 5rem; }
 .big { font-size: 2rem; }
+#latestImgPreview { max-width: calc(100vw - 4rem); max-height: calc(100vh - 4rem); }
 
 /* fileZone */
 #fileZone {
