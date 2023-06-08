@@ -5,7 +5,7 @@
   <title>CrunchPNG</title>
   <meta name="description" content="Bulk .png optimizer">
   <meta name="keywords" content=".png, optimize, small, lossless, optimise">
-  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="icon" type="image/png" href="images/icon.png">
 
   <!-- use https://generator.jspm.io/ to figure out what scopes/imports to add -->
   <!-- then switch links to unpkg, because it works with WASM -->
@@ -31,9 +31,11 @@
   <script src="app.js" type="module"></script>
   <script src="funStyleNonsense.js" defer></script>
 </head>
-<body>
+<body @drop.prevent="handleFileDrop" @dragover.prevent>
+  <input type="file" multiple accept="image/png, .zip" @change="handleFileInput" ref="fileInput" id="fileInput">
+
   <header class="col centerChildren">
-    <img id="logo" src="icon.png">
+    <img id="logo" src="images/icon.png">
     <h1>Crunch PNG</h1>
     <h2><code id="tagText">bulk</code> <code>.png</code> optimizer</h2>
 
@@ -44,8 +46,10 @@
   <span class="big showUntilInit">Loading...</span>
 
   <div class="hideUntilInit">
-    <form v-if="state === 'input'" @submit.prevent="optimizeImages" class="col gap1">
-      <input type="file" multiple accept="image/png" @change="handleFileInput" ref="fileInput">
+    <form v-if="state === 'input'" @submit.prevent="optimizeImages" class="col gap1 centerChildren">
+      <div id="fileZone" class="col" @click="$refs.fileInput.click()">
+        <span class="selectedText centered">{{ selectedText }}</span>
+      </div>
 
       <button type="submit" :disabled="images.length===0">Optimize</button>
     </form>
@@ -88,8 +92,6 @@
   <div class="col">
     <h3>Todo:</h3>
     <ul>
-      <li><code>.zip</code> input</li>
-      <li>Fancy file input</li>
       <li>Alpha optimizations (needs a different oxipng port)</li>
     </ul>
   </div>

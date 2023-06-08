@@ -2,6 +2,7 @@ import { createApp } from "petite-vue"
 import { optimise as optimize } from "@jsquash/oxipng"
 import { encode, decode } from "@jsquash/png"
 import pLimit from 'p-limit'
+import { isPNG, isZIP } from "./util.js"
 
 /**
  * Downloads a blob as a file with the specified filename.
@@ -42,7 +43,7 @@ async function optimizeImage(image) {
   const optBuff = await optimize(imgBuff, { level: 6, interlace: false })
 
   // if we ended up making the image bigger, use the original instead.
-  const outData = (optBuff.byteLength > srcBuff.byteLength)? srcBuff : optBuff;
+  const outData = (optBuff.byteLength > srcBuff.byteLength)? srcBuff : optBuff
 
   return { name: image.name, data: outData  }
 }
@@ -54,10 +55,43 @@ createApp({
   originalSize: 0,
   optimizeSize: 0,
   latestFile: '',
-  async handleFileInput(e) {
-    // you can't use array functions directly on a FileList, so we convert it into an array
-    this.images = [...e.target.files]
-    // calculate size of all the images, for stats later on
+  selectedText: 'No files selected',
+  zip: new JSZip(),
+  handlingZip: false,
+
+  handleFileDrop(e) { this.handleFiles([...e.dataTransfer.files]) },
+  handleFileInput(e) { this.handleFiles([...e.target.files]) },
+  async handleFiles(files) {
+    // if there are any zip files, select the first one to process
+    let zipFile
+    for (const file of files) {
+      if (isZIP(file)) { zipFile = file; break }
+    }
+
+    // save selected images into array
+    if (zipFile) {
+      // if zip, unzip first
+      this.selectedText = zipFile.name
+      this.handlingZip = true
+
+      const zip = await this.zip.loadAsync(zipFile)
+      this.images = Object.values(zip.files).filter(isPNG)
+      // files from JSZip don't have stuff in the same places, so remap them so the rest of the code works
+      this.images = await this.images.map(img => ({
+        ...img, size: img._data.uncompressedSize,
+        arrayBuffer: async () => img.async("ArrayBuffer")
+      }))
+    } else {
+      this.images = files.filter(isPNG)
+      this.selectedText = `${this.images.length} image${this.images.length > 1? 's' : ''}`
+    }
+
+    // in case of somehow not having any images, panic
+    if (this.images.length === 0) {
+      console.error('File selected, but no images found! Did the user select a zip that doesn\'t contain any .pngs?')
+      this.reset()
+    }
+
     this.originalSize = this.images.reduce((total, img) => total + parseInt(img.size), 0)
   },
 
@@ -83,21 +117,20 @@ createApp({
     })))
 
     // if we have a single image, we can save it directly, no zip
-    if (optimizedImages.length === 1) {
+    if (!this.handlingZip && optimizedImages.length === 1) {
       // encode png to blob
       const blob = new Blob([optimizedImages[0].data], { type: 'image/png' })
       // save it
       saveBlob(blob, optimizedImages[0].name)
     } else {
       // add every file to a new zip file
-      const zip = new JSZip()
       optimizedImages.forEach(({ name, data }) => {
-        zip.file(name, data)
+        this.zip.file(name, data)
       })
       // encode the zip as a blob
-      const zipBlob = await zip.generateAsync({ type: 'blob' })
-      // save it
-      saveBlob(zipBlob, 'compressedImages.zip')
+      const zipBlob = await this.zip.generateAsync({ type: 'blob' })
+      // save it retaining original zip filename if input was a zip
+      saveBlob(zipBlob, this.handlingZip? this.selectedText : 'optimizedImages.zip')
     }
 
     const end = Date.now() // log time for racing purposes
@@ -105,12 +138,15 @@ createApp({
 
     this.state = 'done'
   },
-  
+
   reset() {
     this.progress = 0
     this.originalSize = 0
     this.optimizeSize = 0
     this.$refs.fileInput.value = null
+    this.zip = new JSZip()
     this.state = 'input'
+    this.selectedText = 'No files selected'
+    this.handlingZip = false
   }
 }).mount()

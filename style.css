@@ -12,6 +12,7 @@ body {
   height: 100vh;
   gap: 2rem;
 }
+
 /* font */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono&family=Noto+Sans:wght@100;300;500;700&display=swap');
 body {
@@ -23,6 +24,7 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 code { font-size: inherit; font-family: 'Noto Sans Mono', monospace; }
+
 /* layout utils */
 h1, h2, h3, h4, h5, p, button, span, label, ::marker, svg, ul, a, input, textarea, sub, th, td { margin: 0; }
 .row { display: flex; flex-direction: row; }
@@ -36,13 +38,34 @@ h1, h2, h3, h4, h5, p, button, span, label, ::marker, svg, ul, a, input, textare
 .gap1 { gap: 0.5rem; }
 .gap2 { gap: 1rem; }
 .gap3 { gap: 1.5rem; }
+
 /* dynamic content while we wait for Vue to load */
 body:not(.vsc-initialized) .hideUntilInit { display: none; }
 body.vsc-initialized .showUntilInit { display: none; }
+
 /* misc */
 .pixel { image-rendering: pixelated; }
 #logo { width: 5rem; }
 .big { font-size: 2rem; }
+
+/* fileZone */
+#fileZone {
+  width: calc(100vw - 2rem);
+  height: 10rem;
+  border-radius: 1rem;
+  background: rgba(255,255,255, 0.10);
+  backdrop-filter: blur(.25rem);
+
+  background-image: url('./images/upload.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 3rem;
+  transition: background-size .25s ease-in-out;
+}
+#fileZone:hover { background-size: 4rem; }
+#fileZone > .selectedText { position: fixed; bottom: 0.25rem; }
+#fileInput { display: none; }
+
 /* fancy garbage background */
 :root:before, body:before {
   /* thing behind everything */
