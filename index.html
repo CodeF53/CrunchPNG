@@ -7,24 +7,6 @@
   <meta name="keywords" content=".png, optimize, small, lossless, optimise">
   <link rel="icon" type="image/png" href="images/icon.png">
 
-  <!-- use https://generator.jspm.io/ to figure out what scopes/imports to add -->
-  <!-- then switch links to unpkg, because it works with WASM -->
-  <script type="importmap">
-    {
-      "imports": {
-        "@jsquash/oxipng": "https://unpkg.com/@jsquash/oxipng@1.0.0/index.js",
-        "@jsquash/png": "https://unpkg.com/@jsquash/png@2.0.0/index.js",
-        "p-limit": "https://unpkg.com/p-limit@4.0.0/index.js",
-        "petite-vue": "https://unpkg.com/petite-vue?module"
-      },
-      "scopes": {
-        "https://unpkg.com/": {
-          "wasm-feature-detect": "https://unpkg.com/wasm-feature-detect@1.5.1/dist/esm/index.js",
-          "yocto-queue": "https://unpkg.com/yocto-queue@1.0.0/index.js"
-        }
-      }
-    }
-  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <link rel="stylesheet" href="style.css">
@@ -44,7 +26,7 @@
     <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
   </header>
 
-  <span class="big showUntilInit">Loading...</span>
+  <span id="statusText" class="big showUntilInit textCenter">Loading...</span>
 
   <div class="hideUntilInit">
     <form v-if="state === 'input'" @submit.prevent="optimizeImages" class="col gap1 centerChildren">
@@ -94,7 +76,6 @@
     <h3>Todo:</h3>
     <ul>
       <li>Alpha optimizations (needs a different oxipng port)</li>
-      <li>Fix <a href="https://cdn.discordapp.com/attachments/702889439264899124/1117869070751105105/image.png">browser dying</a> when given large images</li>
     </ul>
   </div>
 </body>

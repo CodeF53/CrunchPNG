@@ -34,6 +34,7 @@ h1, h2, h3, h4, h5, p, button, span, label, ::marker, svg, ul, a, input, textare
 .spaceBetween { justify-content: space-between; }
 .spaceAround { justify-content: space-around; }
 .spaceEvenly { justify-content: space-evenly; }
+.textCenter { text-align: center; }
 .gap0 { gap: 0.25rem; }
 .gap1 { gap: 0.5rem; }
 .gap2 { gap: 1rem; }
@@ -48,6 +49,7 @@ body.vue-mounted .showUntilInit { display: none; }
 #logo { width: 5rem; }
 .big { font-size: 2rem; }
 #latestImgPreview { max-width: calc(100vw - 4rem); max-height: calc(100vh - 4rem); }
+.error { color: red; }
 
 /* fileZone */
 #fileZone {

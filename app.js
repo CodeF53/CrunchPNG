@@ -1,59 +1,26 @@
-import { createApp } from "petite-vue"
-import { optimise as optimize } from "@jsquash/oxipng"
-import { encode, decode } from "@jsquash/png"
-import pLimit from 'p-limit'
-import { isPNG, isZIP } from "./util.js"
+import { createApp } from 'https://esm.sh/petite-vue?module'
+import { isPNG, isZIP, saveBlob } from './util.js'
+import platform from 'https://esm.sh/platform'
 
-// his name is steve, (he took me 2.5 hours to make, ask Obscure#3584)
-const encodeB64 = (uint8array) => btoa(Array.from(uint8array, x => String.fromCharCode(x)).join(''));
-
-/**
- * Downloads a blob as a file with the specified filename.
- *
- * @param {Blob} blob - The blob to be downloaded.
- * @param {string} filename - The name of the file to be saved.
- * @returns {void}
- */
-function saveBlob(blob, filename) {
-  // create a URL for the blob
-  const url = URL.createObjectURL(blob)
-
-  // create a link to download the blob, and click it
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  link.click()
-
-  // Clean up by revoking the URL object
-  URL.revokeObjectURL(url)
+const statusText = document.getElementById('statusText')
+let badBrowser = false
+if (platform.name === 'IE') {
+  statusText.innerText = 'This website requires a modern browser.'
+  statusText.innerHTML += '<br>Download <a href="https://www.mozilla.org/firefox/" target="_blank">Firefox</a> for the best experience.';
+  badBrowser = true
+} else if (platform.name === 'Firefox' && platform.version < 114) {
+  statusText.innerText = 'This website requires features which aren\'t supported by your current browser.\nPlease update to Firefox 114 or later'
+  badBrowser = true
 }
-
-/**
- * Optimizes an image file (assumed to be a PNG) asynchronously.
- *
- * @param {File} image - The image file to be optimized.
- * @return {Promise<{ name: string, data: ArrayBuffer }>} A promise that resolves to an object containing the optimized image name and data.
- */
-async function optimizeImage(image) {
-  // load image into a buffer
-  const srcBuff = await image.arrayBuffer()
-
-  // re-encode image, (accounts for a large portion of compression in testing)
-  const imgData = await decode(srcBuff)
-  const imgBuff = await encode(imgData)
-
-  // optimize using oxipng
-  const optBuff = await optimize(imgBuff, { level: 6, interlace: false })
-
-  // if we ended up making the image bigger, use the original instead.
-  const outData = (optBuff.byteLength > srcBuff.byteLength)? srcBuff : optBuff
-
-  return { name: image.name, data: outData  }
+if (badBrowser) {
+  statusText.className += ' error'
+  throw statusText.innerText
 }
 
 createApp({
   state: 'input',
   images: [],
+  optimizedImages: [],
   progress: 0,
   originalSize: 0,
   optimizeSize: 0,
@@ -104,33 +71,44 @@ createApp({
     if (this.images.length === 0) { return } // guard against running when we don't even have any images selected
     this.state = 'processing'
 
-    const start = Date.now() // log time for racing purposes
+    // create a worker so the browser doesn't die with all the processing we are about to do
+    const worker = new Worker('imageProcessor.worker.js', { type: "module" })
 
-    // optimise images, limiting the number of async processes to avoid out of memory errors
-    const limit = pLimit(32)
-    const optimizedImages = await Promise.all(this.images.map(async image => await limit(async () => {
-      const optimized = await optimizeImage(image)
+    // listen to the worker for updates / resulting data
+    worker.addEventListener('message', e => {
+      const event = e.data;
+      switch (event.type) {
+        case 'update':
+          this.optimizeSize += event.data.size
+          this.latestImg = event.data.latestImg
+          this.progress++
+          break;
+        case 'finished':
+          this.optimizedImages = event.data
+          this.saveResult()
+          break;
+      }
+    })
 
-      // update latestImg image display
-      const imgArr = new Uint8Array(optimized.data) // bytes
-      this.latestImg = encodeB64(imgArr);
-      // increment progressBar
-      this.progress++
-      // increment optimized total
-      this.optimizeSize += optimized.data.byteLength
+    // pre-process arrayBuffers
+    let images = await Promise.all(this.images.map(async img => {
+      const arrayBuffer = await img.arrayBuffer()
+      return { name: img.name, arrayBuffer: arrayBuffer }
+    }))
+    // start worker
+    worker.postMessage({ images: images })
+  },
 
-      return optimized
-    })))
-
+  async saveResult() {
     // if we have a single image, we can save it directly, no zip
-    if (!this.handlingZip && optimizedImages.length === 1) {
+    if (!this.handlingZip && this.optimizedImages.length === 1) {
       // encode png to blob
-      const blob = new Blob([optimizedImages[0].data], { type: 'image/png' })
+      const blob = new Blob([this.optimizedImages[0].data], { type: 'image/png' })
       // save it
-      saveBlob(blob, optimizedImages[0].name)
+      saveBlob(blob, this.optimizedImages[0].name)
     } else {
       // add every file to a new zip file
-      optimizedImages.forEach(({ name, data }) => {
+      this.optimizedImages.forEach(({ name, data }) => {
         this.zip.file(name, data)
       })
       // encode the zip as a blob
@@ -139,20 +117,19 @@ createApp({
       saveBlob(zipBlob, this.handlingZip? this.selectedText : 'optimizedImages.zip')
     }
 
-    const end = Date.now() // log time for racing purposes
-    console.log(`Execution time: ${end - start} ms`)
-
     this.state = 'done'
   },
 
   reset() {
+    this.state = 'input'
+    this.images = []
+    this.optimizedImages = []
     this.progress = 0
     this.originalSize = 0
     this.optimizeSize = 0
-    this.$refs.fileInput.value = null
-    this.zip = new JSZip()
-    this.state = 'input'
+    this.latestImg = ''
     this.selectedText = 'No files selected'
+    this.zip = new JSZip()
     this.handlingZip = false
   }
 }).mount()
