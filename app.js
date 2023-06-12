@@ -6,10 +6,10 @@ const statusText = document.getElementById('statusText')
 let badBrowser = false
 if (platform.name === 'IE') {
   statusText.innerText = 'This website requires a modern browser.'
-  statusText.innerHTML += '<br>Download <a href="https://www.mozilla.org/firefox/" target="_blank">Firefox</a> for the best experience.';
+  statusText.innerHTML += '<br>Download <a href="https://www.mozilla.org/firefox/" target="_blank">Firefox</a> for the best experience.'
   badBrowser = true
 } else if (platform.name === 'Firefox' && platform.version < 114) {
-  statusText.innerText = 'This website requires features which aren\'t supported by your current browser.\nPlease update to Firefox 114 or later'
+  statusText.innerText = "This website requires features which aren't supported by your current browser.\nPlease update to Firefox 114 or later"
   badBrowser = true
 }
 if (badBrowser) {
@@ -29,15 +29,24 @@ createApp({
   zip: new JSZip(),
   handlingZip: false,
 
-  mounted() { document.body.className = 'vue-mounted' },
+  mounted() {
+    document.body.className += ' vue-mounted'
+  },
 
-  handleFileDrop(e) { this.handleFiles([...e.dataTransfer.files]) },
-  handleFileInput(e) { this.handleFiles([...e.target.files]) },
+  handleFileDrop(e) {
+    this.handleFiles([...e.dataTransfer.files])
+  },
+  handleFileInput(e) {
+    this.handleFiles([...e.target.files])
+  },
   async handleFiles(files) {
     // if there are any zip files, select the first one to process
     let zipFile
     for (const file of files) {
-      if (isZIP(file)) { zipFile = file; break }
+      if (isZIP(file)) {
+        zipFile = file
+        break
+      }
     }
 
     // save selected images into array
@@ -50,17 +59,18 @@ createApp({
       this.images = Object.values(zip.files).filter(isPNG)
       // files from JSZip don't have stuff in the same places, so remap them so the rest of the code works
       this.images = await this.images.map(img => ({
-        ...img, size: img._data.uncompressedSize,
-        arrayBuffer: async () => img.async("ArrayBuffer")
+        ...img,
+        size: img._data.uncompressedSize,
+        arrayBuffer: async () => img.async('ArrayBuffer'),
       }))
     } else {
       this.images = files.filter(isPNG)
-      this.selectedText = `${this.images.length} image${this.images.length > 1? 's' : ''}`
+      this.selectedText = `${this.images.length} image${this.images.length > 1 ? 's' : ''}`
     }
 
     // in case of somehow not having any images, panic
     if (this.images.length === 0) {
-      console.error('File selected, but no images found! Did the user select a zip that doesn\'t contain any .pngs?')
+      console.error("File selected, but no images found! Did the user select a zip that doesn't contain any .pngs?")
       this.reset()
     }
 
@@ -68,33 +78,35 @@ createApp({
   },
 
   async optimizeImages() {
-    if (this.images.length === 0) { return } // guard against running when we don't even have any images selected
+    if (this.images.length === 0) return // guard against running when we don't even have any images selected
     this.state = 'processing'
 
     // create a worker so the browser doesn't die with all the processing we are about to do
-    const worker = new Worker('imageProcessor.worker.js', { type: "module" })
+    const worker = new Worker('imageProcessor.worker.js', { type: 'module' })
 
     // listen to the worker for updates / resulting data
     worker.addEventListener('message', e => {
-      const event = e.data;
+      const event = e.data
       switch (event.type) {
         case 'update':
           this.optimizeSize += event.data.size
           this.latestImg = event.data.latestImg
           this.progress++
-          break;
+          break
         case 'finished':
           this.optimizedImages = event.data
           this.saveResult()
-          break;
+          break
       }
     })
 
     // pre-process arrayBuffers
-    let images = await Promise.all(this.images.map(async img => {
-      const arrayBuffer = await img.arrayBuffer()
-      return { name: img.name, arrayBuffer: arrayBuffer }
-    }))
+    let images = await Promise.all(
+      this.images.map(async img => {
+        const arrayBuffer = await img.arrayBuffer()
+        return { name: img.name, arrayBuffer: arrayBuffer }
+      }),
+    )
     // start worker
     worker.postMessage({ images: images })
   },
@@ -114,7 +126,7 @@ createApp({
       // encode the zip as a blob
       const zipBlob = await this.zip.generateAsync({ type: 'blob' })
       // save it retaining original zip filename if input was a zip
-      saveBlob(zipBlob, this.handlingZip? this.selectedText : 'optimizedImages.zip')
+      saveBlob(zipBlob, this.handlingZip ? this.selectedText : 'optimizedImages.zip')
     }
 
     this.state = 'done'
@@ -131,5 +143,5 @@ createApp({
     this.selectedText = 'No files selected'
     this.zip = new JSZip()
     this.handlingZip = false
-  }
+  },
 }).mount()

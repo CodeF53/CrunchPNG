@@ -1,0 +1,12 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "modificationsIfAvailable",
+  "[css]": { "editor.formatOnSave": false },
+  "[html]": {
+    "editor.formatOnSave": false
+  },
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 500,
+  "editor.tabSize": 2
+}

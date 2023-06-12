@@ -22,30 +22,37 @@ async function optimizeImage(image) {
   const optBuff = await optimize(imgBuff, { level: 4, interlace: false })
 
   // if we ended up making the image bigger, use the original instead.
-  const outData = (optBuff.byteLength > srcBuff.byteLength)? srcBuff : optBuff
+  const outData = optBuff.byteLength > srcBuff.byteLength ? srcBuff : optBuff
 
-  return { name: image.name, data: outData  }
+  return { name: image.name, data: outData }
 }
 
-self.addEventListener('message', async (event) => {
+self.addEventListener('message', async event => {
   const start = Date.now() // log time for racing purposes
 
   const { images } = event.data
-  if (!images) { return } // ignore events that aren't to start processing
+  if (!images) return // ignore events that aren't to start processing
 
   // optimise images, limiting the number of async processes to avoid out of memory errors
   const limit = pLimit(8)
-  const optimizedImages = await Promise.all(images.map(async (image) => await limit(async () => {
-    const optimized = await optimizeImage(image)
+  const optimizedImages = await Promise.all(
+    images.map(async image => {
+      return await limit(async () => {
+        const optimized = await optimizeImage(image)
 
-    // Send progress update to main thread, (latestImg display, optimized total, progressBar)
-    self.postMessage({ type: 'update', data: {
-      latestImg: encodeB64(new Uint8Array(optimized.data)),
-      size: optimized.data.byteLength,
-    }})
+        // Send progress update to main thread, (latestImg display, optimized total, progressBar)
+        self.postMessage({
+          type: 'update',
+          data: {
+            latestImg: encodeB64(new Uint8Array(optimized.data)),
+            size: optimized.data.byteLength,
+          },
+        })
 
-    return optimized
-  })))
+        return optimized
+      })
+    }),
+  )
 
   self.postMessage({ type: 'finished', data: optimizedImages })
 

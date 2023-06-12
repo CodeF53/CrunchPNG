@@ -1,5 +1,5 @@
-export const isPNG = ({name}) => name.endsWith('.png')
-export const isZIP = ({name}) => name.endsWith('.zip')
+export const isPNG = ({ name }) => name.endsWith('.png')
+export const isZIP = ({ name }) => name.endsWith('.zip')
 
 /**
  * Downloads a blob as a file with the specified filename.
@@ -28,4 +28,4 @@ export function saveBlob(blob, filename) {
  * @param {Uint8Array} uint8array - The Uint8Array to be encoded.
  * @returns {string} The Base64 representation of the Uint8Array.
  */
-export const encodeB64 = (uint8array) => btoa(Array.from(uint8array, x => String.fromCharCode(x)).join(''));
+export const encodeB64 = uint8array => btoa(Array.from(uint8array, x => String.fromCharCode(x)).join(''))
