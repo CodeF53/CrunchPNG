@@ -119,12 +119,15 @@ createApp({
       // save it
       saveBlob(blob, this.optimizedImages[0].name)
     } else {
-      // add every file to a new zip file
-      this.optimizedImages.forEach(({ name, data }) => {
-        this.zip.file(name, data)
-      })
+      // add every image to a zip file
+      this.optimizedImages.forEach(({ name, data }) => this.zip.file(name, data))
+
+      // move all files to new zip file (we have to do this because otherwise JSzip throws a fit and doesn't compress properly)
+      const zip = new JSZip()
+      await Promise.all(Object.values(this.zip.files).map(async file => zip.file(file.name, await file.async('uint8array'))))
+
       // encode the zip as a blob
-      const zipBlob = await this.zip.generateAsync({ type: 'blob' })
+      const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 9 } })
       // save it retaining original zip filename if input was a zip
       saveBlob(zipBlob, this.handlingZip ? this.selectedText : 'optimizedImages.zip')
     }
