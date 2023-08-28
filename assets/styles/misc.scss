@@ -1,0 +1,26 @@
+// dark!
+:root {
+  color-scheme: dark;
+  background: linear-gradient(#004b4b 0%, #001818 20%);
+}
+
+// font
+body {
+  font-family: sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+// logical sizing
+* { box-sizing: border-box; }
+
+// no default margins
+h1, h2, h3, h4, h5, h6, p, span, a, strong, em, blockquote, cite, q, abbr, del, ins, mark, sub, sup, code, pre, kbd, var, samp, ol, ul {
+  margin: unset;
+}
+
+// make monospace not look tiny next to everything else
+code { font-size: 1.3em; }
