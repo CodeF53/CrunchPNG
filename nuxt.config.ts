@@ -5,6 +5,14 @@ export default defineNuxtConfig({
 
   css: ['~/assets/styles/layout.scss', '~/assets/styles/misc.scss', '~/assets/styles/components.scss'],
 
+  build: { transpile: ['@jsquash/png', '@jsquash/oxipng'] },
+  vite: {
+    optimizeDeps: { exclude: ['@jsquash/png', '@jsquash/oxipng'] },
+    worker: {
+      format: 'es',
+    },
+  },
+
   app: {
     head: {
       title: 'CrunchPNG',

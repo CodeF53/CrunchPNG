@@ -11,6 +11,10 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@jsquash/oxipng": "^2.0.0-rc.0-single-thread-only",
+    "@jsquash/png": "^2.1.4",
+    "jszip": "^3.10.1",
+    "p-limit": "^4.0.0",
     "sass": "^1.66.1"
   },
   "devDependencies": {

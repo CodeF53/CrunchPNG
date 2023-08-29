@@ -16,7 +16,8 @@
     <details>
       <summary>TODO:</summary>
       <ul class="col">
-        <li>Functionality</li>
+        <li>Fancy Input</li>
+        <li>Update OxiPNG source</li>
         <li>Style</li>
       </ul>
     </details>
