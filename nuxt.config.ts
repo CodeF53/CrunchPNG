@@ -8,9 +8,7 @@ export default defineNuxtConfig({
   build: { transpile: ['@jsquash/png', '@jsquash/oxipng'] },
   vite: {
     optimizeDeps: { exclude: ['@jsquash/png', '@jsquash/oxipng'] },
-    worker: {
-      format: 'es',
-    },
+    worker: { format: 'es' },
   },
 
   app: {

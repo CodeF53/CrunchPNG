@@ -13,7 +13,7 @@ async function optimizeImage(image: DumbFile): Promise<DumbFile> {
   if (reEncoded.byteLength < outData.byteLength)
     outData = reEncoded
 
-  const optimized = await optimize(outData)
+  const optimized = await optimize(outData, { optimiseAlpha: true })
 
   if (optimized.byteLength < outData.byteLength)
     outData = optimized
