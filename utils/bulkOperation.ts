@@ -1,48 +1,34 @@
-// Distributes contents of input array into arrays of size N
-// Large files tend to be in the same folder, so we use Round Robin distribution in an attempt to give each thread an equal amount of work
-// Round robin item distribution results is ~1.6x faster
-function chunkArray(array: unknown[], size: number): unknown[][] {
-  const chunks: unknown[][] = Array.from({ length: size }, () => [])
+export default function bulkOperation(array: unknown[], WorkerConstructor: new () => Worker, iterProgress: () => void): Promise<unknown[]> {
+  // create (threadCount - 2) workers (clamped to a min 1 and max of array.length)
+  const numWorkers = Math.min(Math.max(navigator.hardwareConcurrency - 2, 1), array.length)
+  const workers = Array.from({ length: numWorkers }, () => new WorkerConstructor())
 
-  for (let i = 0; i < array.length; i++)
-    chunks[i % size].push(array[i])
+  // assign onmessage to give them work to do until we are done
+  const targetLen = array.length
+  const outData: unknown[] = []
 
-  return chunks
-}
-
-// Create a utility function to create a web worker and return a promise
-function createWorkerPromise(array: unknown[], WorkerConstructor: new () => Worker, iterProgress: () => void): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    const worker = new WorkerConstructor()
-    worker.postMessage(array)
-
-    worker.onmessage = (event: { data: { type: 'done' | 'update'; data: unknown } }) => {
-      if (event.data.type === 'done') {
-        resolve(event.data.data)
-        worker.terminate()
+  return new Promise((resolve, _reject) => {
+    workers.forEach(worker => worker.onmessage = (event: { data: { data?: unknown } }) => {
+      // if we got data, save it & push to target array
+      if (event.data.data) {
+        iterProgress()
+        outData.push(event.data.data)
       }
-      else { iterProgress() }
-    }
 
-    worker.onerror = (error) => {
-      reject(error)
-      worker.terminate()
-    }
+      // get next item to work on
+      const input = array.pop()
+
+      if (input) { // if there is an item to work on, do it
+        worker.postMessage(input)
+      }
+      else {
+        // if no more jobs to assign, we don't need this worker anymore
+        worker.terminate()
+
+        // if we have completed all work, resolve promise
+        if (outData.length === targetLen)
+          resolve(outData)
+      }
+    })
   })
-}
-
-export default async function bulkOperation(array: unknown[], WorkerConstructor: new () => Worker, iterProgress: () => void): Promise<unknown[]> {
-  // Split array into chunks
-  const arrayChunks = chunkArray(array, Math.min(Math.max(navigator.hardwareConcurrency - 2, 1), array.length))
-
-  // Create promises for each worker operation
-  const workerPromises = arrayChunks.map(chunk => createWorkerPromise(chunk, WorkerConstructor, iterProgress))
-
-  // Await results of worker promises
-  const results = await Promise.all(workerPromises)
-
-  // Combine worker results
-  const combinedResults = results.reduce((acc: unknown[], result: unknown) => acc.concat(result), [])
-
-  return combinedResults
 }
