@@ -14,6 +14,9 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'CrunchPNG',
+      link: [
+        { rel: 'icon', href: '#' },
+      ],
       meta: [
         { name: 'description', content: 'Bulk .png optimizer' },
         { name: 'keywords', content: '.png, optimize, small, lossless, optimise' },
