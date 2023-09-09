@@ -3,6 +3,7 @@
   "extends": "./.nuxt/tsconfig.json",
   "globals": {
     "DumbFile": true,
-    "Image": true
+    "Image": true,
+    "Options": true
   }
 }

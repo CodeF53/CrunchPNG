@@ -1,15 +1,14 @@
 <script setup lang="ts">
 const state: Ref<'input' | 'process' | 'complete'> = ref('input')
-const files: Ref<File[]> = ref([])
+const options: Ref<Options> = ref({ files: [], saveText: 'images.zip' })
 
 function next() {
   state.value = (() => {
     switch (state.value) {
       case 'input': return 'process'
-      case 'process': return 'complete'
-      case 'complete':
+      case 'process':
       default:
-        files.value = []
+        options.value = { files: [], saveText: 'images.zip' }
         return 'input'
     }
   })()
@@ -19,18 +18,15 @@ function next() {
 <template>
   <div id="app" class="col centerChildren">
     <StaticHeader />
+    <div class="spacer" />
 
     <StepInput
       v-if="state === 'input'"
-      v-model:files="files" @next="next()"
+      v-model:options="options" @next="next()"
     />
     <StepProcess
       v-else-if="state === 'process'"
-      v-model:files="files" @next="next()"
-    />
-    <StepComplete
-      v-else-if="state === 'complete'"
-      @next="next()"
+      v-model:options="options" @next="next()"
     />
 
     <div class="spacer" />
@@ -40,8 +36,8 @@ function next() {
 
 <style lang="scss">
 #app {
-  min-height: calc(100vh - 3rem);
-  margin-top: 2rem;
+  min-height: calc(100vh - 2rem);
+  margin-top: 1rem;
   margin-bottom: 1rem;
 }
 </style>

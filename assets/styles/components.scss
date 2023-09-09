@@ -1,7 +1,7 @@
 :root {
   // colors
   @for $i from 0 through 4 {
-    $v: 20 + $i * 10;
+    $v: 30 + $i * 10;
     --elv#{$i}: #{rgb($v, $v, $v)};
   }
   --accent: #16fbfb;
@@ -11,16 +11,18 @@
   // progress and input[type=range]
   --bar-background: var(--elv0);
   --bar-height: .5rem;
-  --bar-width: 10rem;
+  --bar-width: 20rem;
 }
 
 input, select, button {
   border: unset;
   border-radius: var(--border-radius);
-  &:disabled { background-color: var(--elv0); }
+  padding: .25rem .5rem;
+
   background-color: var(--elv1);
   &:hover { background-color: var(--elv2); }
   &:active { background-color: var(--elv3); }
+  &:disabled { background-color: var(--elv0); }
 }
 
 // custom progressbar

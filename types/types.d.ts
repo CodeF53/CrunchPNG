@@ -7,3 +7,8 @@ interface DumbFile {
   name: string
   data: ArrayBuffer
 }
+
+interface Options {
+  saveText: string
+  files: File[]
+}

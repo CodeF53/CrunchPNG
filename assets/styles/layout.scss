@@ -27,6 +27,9 @@ body {
 .spaceAround { justify-content: space-around; }
 .spaceEvenly { justify-content: space-evenly; }
 
+.fullWidth { width: 100%; }
+.fullHeight { height: 100%; }
+
 .spacer { flex:1; }
 
 .hidden { visibility: hidden; }

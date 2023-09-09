@@ -3,10 +3,11 @@ import JSZip from 'jszip'
 import pLimit from 'p-limit'
 import OptimizeWorker from '~/utils/optimize.worker?worker'
 
-const props = defineProps<{ files: File[] }>()
+const props = defineProps<{ options: Options }>()
 const emit = defineEmits<{ (e: 'next'): void }>()
 
 const stage = ref('')
+const isDone = ref(false)
 const progress: Ref<number> = ref(0)
 const progressMax: Ref<number> = ref(0)
 const iterProgress = () => progress.value++
@@ -19,12 +20,12 @@ async function loadFiles() {
   // update display
   stage.value = 'Loading Files'
   progress.value = 0
-  progressMax.value = props.files.length
+  progressMax.value = props.options.files.length
 
   // load every file's arrayBuffer asynchronously
   console.time('loadFiles')
   const limit = pLimit(8)
-  await Promise.all(props.files.map(async (file: File) => await limit(async () => {
+  await Promise.all(props.options.files.map(async (file: File) => await limit(async () => {
     const data = await file.arrayBuffer()
     if (isPNG(file))
       images.value.push({ name: file.name, data })
@@ -61,7 +62,7 @@ async function saveResult() {
     // update display
     stage.value = 'Compressing'
     progress.value = 0
-    progressMax.value = props.files.length
+    progressMax.value = props.options.files.length
 
     // add files to zip
     console.time('Compress')
@@ -76,7 +77,7 @@ async function saveResult() {
     console.timeEnd('Compress')
 
     blob = await zip.generateAsync({ type: 'blob' })
-    outputName = 'images.zip'
+    outputName = props.options.saveText
   }
   else {
     blob = new Blob([files[0].data])
@@ -85,17 +86,43 @@ async function saveResult() {
   stage.value = 'Saving'
   saveBlob(blob, outputName)
 
-  // move to Complete page
-  emit('next')
+  // move to next step
+  done()
+}
+
+function done() {
+  stage.value = 'Done!'
+  isDone.value = true
 }
 
 onMounted(loadFiles)
 </script>
 
 <template>
-  <div class="col gap1 centerChildren">
+  <div id="process" class="col spaceEvenly centerChildren">
     <h2>{{ stage }}</h2>
     <progress :value="progress" :max="progressMax" />
-    <span>{{ progress }} / {{ progressMax }}</span>
+
+    <span v-if="!isDone" id="progressCount">{{ progress }} / {{ progressMax }}</span>
+    <button v-else @click="$emit('next')">
+      Back to Start
+    </button>
   </div>
 </template>
+
+<style lang="scss">
+#process {
+  height: 8rem;
+
+  // big boy
+  > h2 { font-size: 2.5rem; }
+
+  // make progress num same vibe & height as back to start button
+  > span {
+    height: 1.6rem;
+    border-radius: var(--border-radius);
+    padding: .25rem .5rem;
+    background-color: var(--elv1);
+  }
+}
+</style>
