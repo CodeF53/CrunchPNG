@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <filter id="noise">
+    <feTurbulence seed="0" baseFrequency="0.05" type="fractalNoise" numOctaves="2" result="turbulence" />
+    <feDisplacementMap in="SourceGraphic" in2="static" xChannelSelector="R" yChannelSelector="G" scale="75" />
+  </filter>
+</svg>
