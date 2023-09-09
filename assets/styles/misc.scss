@@ -1,7 +1,15 @@
 // dark!
 :root {
   color-scheme: dark;
-  background: #0c0c0c;
+}
+:root::before {
+  content: ''; position: fixed;
+  left: -2rem; right: -2rem;
+  top: -2rem; bottom: -2rem;
+  z-index: -1;
+
+  background: radial-gradient(circle at center, #001010 20%, #004b4b);
+  filter: url('~/assets/noise.svg#noise');
 }
 
 // font
