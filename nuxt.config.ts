@@ -18,9 +18,10 @@ export default defineNuxtConfig({
         { rel: 'icon', href: '#' },
       ],
       meta: [
+        { name: 'darkreader-lock' },
         { name: 'description', content: 'Bulk .png optimizer' },
         { name: 'keywords', content: '.png, optimize, small, lossless, optimise' },
-        { name: 'author', content: 'F53' },
+        { name: 'author', content: 'Cassie' },
         { name: 'theme-color', content: '#004b4b' },
         // twitter stuff
         { property: 'og:title', content: 'CrunchPNG' },
