@@ -11,27 +11,31 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@jsquash/oxipng": "^2.0.0-rc.0-single-thread-only",
-    "@jsquash/png": "^2.1.4",
+    "@jsquash/oxipng": "^2.3.0",
+    "@jsquash/png": "^3.0.1",
+    "caniuse-lite": "^1.0.30001700",
     "jszip": "^3.10.1",
-    "p-limit": "^4.0.0",
-    "sass": "^1.66.1"
+    "p-limit": "^6.2.0",
+    "sass": "^1.85.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.41.0",
-    "@nuxt/devtools": "latest",
-    "@types/node": "^18.17.3",
-    "eslint": "^8.48.0",
-    "lint-staged": "^14.0.1",
-    "nuxt": "^3.6.5",
-    "simple-git-hooks": "^2.9.0",
-    "typescript": "^5.2.2",
-    "vue-tsc": "^1.8.8"
+    "@antfu/eslint-config": "^4.3.0",
+    "@nuxt/devtools": "^2.1.0",
+    "@types/node": "^22.13.4",
+    "eslint": "^9.20.1",
+    "lint-staged": "^15.4.3",
+    "nuxt": "^3.15.4",
+    "simple-git-hooks": "^2.11.1",
+    "typescript": "^5.7.3",
+    "vue-tsc": "^2.2.2"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
+    "pre-commit": "bun lint-staged"
   },
   "lint-staged": {
     "*": "eslint --fix"
-  }
+  },
+  "trustedDependencies": [
+    "@parcel/watcher"
+  ]
 }
