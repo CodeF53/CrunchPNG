@@ -1,7 +1,7 @@
-import { decode as decodePNG, encode as encodePNG } from '@jsquash/png'
-import { init as initEncode } from '@jsquash/png/encode'
-import { init as initDecode } from '@jsquash/png/decode'
 import optimize, { init as initOxiPNG } from '@jsquash/oxipng/optimise'
+import { decode as decodePNG, encode as encodePNG } from '@jsquash/png'
+import { init as initDecode } from '@jsquash/png/decode'
+import { init as initEncode } from '@jsquash/png/encode'
 
 // on creation, init needed shit
 Promise.all([initOxiPNG(), initEncode(), initDecode()]).then(() => {

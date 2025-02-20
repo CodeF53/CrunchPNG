@@ -4,6 +4,7 @@ import pLimit from 'p-limit'
 import OptimizeWorker from '~/utils/optimize.worker?worker'
 
 const props = defineProps<{ options: Options }>()
+// eslint-disable-next-line unused-imports/no-unused-vars
 const emit = defineEmits<{ (e: 'next'): void }>()
 
 const stage = ref('')
